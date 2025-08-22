@@ -1,8 +1,7 @@
-name: znuny
 services:
   znuny:
-    #image: ghcr.io/0xFOSSMan/znuny-docker
+    image: ghcr.io/0xfossman/znuny-docker:latest
     build:
       context: .
     ports:
-     - 8123:80
+      - 8123:80
