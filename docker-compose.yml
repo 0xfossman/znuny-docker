@@ -3,5 +3,7 @@ services:
     image: ghcr.io/0xfossman/znuny-docker:latest
     build:
       context: .
+    env_file:
+      - .env
     ports:
       - 8123:80
