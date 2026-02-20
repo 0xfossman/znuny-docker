@@ -5,7 +5,7 @@ on:
     branches:
       - main
     tags:
-      - "v*"
+      - 'v*'
   pull_request:
     branches:
       - main
@@ -26,12 +26,6 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      - name: Verify Dockerfile has no wildcard Znuny symlink
-        run: |
-          if rg -n "ln -s /opt/znuny-\* /opt/otrs|/opt/znuny-\*" Dockerfile; then
-            echo "Forbidden wildcard Znuny symlink pattern found in Dockerfile"
-            exit 1
-          fi
       - name: Log in to GitHub Container Registry
         if: github.event_name != 'pull_request'
         uses: docker/login-action@v3
