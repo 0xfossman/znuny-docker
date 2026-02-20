@@ -17,7 +17,7 @@ permissions:
 
 env:
   IMAGE_NAME: ghcr.io/${{ github.repository }}
-  SHOULD_PUSH: ${{ github.event_name != 'pull_request' && github.repository == '0xFOSSMan/znuny-docker' && github.actor != 'dependabot[bot]' }}
+  SHOULD_PUSH: ${{ github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v') && github.actor == github.repository_owner }}
 
 jobs:
   docker:
