@@ -15,6 +15,10 @@ permissions:
   contents: read
   packages: write
 
+env:
+  IMAGE_NAME: ghcr.io/${{ github.repository }}
+  SHOULD_PUSH: ${{ github.event_name != 'pull_request' && github.repository == '0xFOSSMan/znuny-docker' && github.actor != 'dependabot[bot]' }}
+
 jobs:
   docker:
     runs-on: ubuntu-latest
@@ -26,6 +30,9 @@ jobs:
       - name: Show commit and Dockerfile header
         run: |
           echo "Git SHA: ${GITHUB_SHA}"
+          echo "Actor: ${GITHUB_ACTOR}"
+          echo "Repository: ${GITHUB_REPOSITORY}"
+          echo "Should push: ${SHOULD_PUSH}"
           sed -n '1,80p' Dockerfile
 
       - name: Verify Dockerfile has no wildcard Znuny symlink
@@ -40,18 +47,18 @@ jobs:
         uses: docker/setup-buildx-action@v3
 
       - name: Log in to GitHub Container Registry
-        if: github.event_name != 'pull_request'
+        if: env.SHOULD_PUSH == 'true'
         uses: docker/login-action@v3
         with:
           registry: ghcr.io
-          username: ${{ github.actor }}
+          username: ${{ github.repository_owner }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Extract Docker metadata
         id: meta
         uses: docker/metadata-action@v5
         with:
-          images: ghcr.io/${{ github.repository }}
+          images: ${{ env.IMAGE_NAME }}
           tags: |
             type=ref,event=branch
             type=ref,event=tag
@@ -65,8 +72,12 @@ jobs:
           file: ./Dockerfile
           pull: true
           no-cache: true
-          push: ${{ github.event_name != 'pull_request' }}
+          push: ${{ env.SHOULD_PUSH == 'true' }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
+
+      - name: Skip push info
+        if: env.SHOULD_PUSH != 'true'
+        run: echo "Image push skipped for this event/actor to avoid GHCR permission errors."
