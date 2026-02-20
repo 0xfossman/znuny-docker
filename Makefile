@@ -2,12 +2,12 @@
 
 build:
 	export COMPOSE_BAKE=true && \
-	docker compose build -t znuny-docker:latest
+	docker compose build
 
 rebuild:
 	export COMPOSE_BAKE=true && \
 	docker compose down && \
-	docker compose build -t znuny-docker:latest && \
+	docker compose build && \
 	docker compose up -d
 
 push:
