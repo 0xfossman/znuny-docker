@@ -1,8 +1,34 @@
 name: znuny
+
 services:
   znuny:
-    #image: ghcr.io/0xFOSSMan/znuny-docker
     build:
       context: .
+    env_file:
+      - .env
     ports:
-     - 8123:80
+      - "8123:80"
+    depends_on:
+      db:
+        condition: service_healthy
+
+  db:
+    image: mariadb:11.4
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      MYSQL_DATABASE: ${ZNUNY_DB_NAME}
+      MYSQL_USER: ${ZNUNY_DB_USER}
+      MYSQL_PASSWORD: ${ZNUNY_DB_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    volumes:
+      - db_data:/var/lib/mysql
+
+volumes:
+  db_data:
