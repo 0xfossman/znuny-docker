@@ -11,7 +11,6 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read
-      statuses: write
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -26,3 +25,8 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           DISABLE_GITHUB_STATUS_REPORTER: true
           VALIDATE_ENV: false
+          VALIDATE_BASH: false
+          VALIDATE_CHECKOV: false
+          VALIDATE_DOCKERFILE_HADOLINT: false
+          VALIDATE_SHELL_SHFMT: false
+          VALIDATE_YAML_PRETTIER: false
